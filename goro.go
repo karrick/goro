@@ -10,9 +10,10 @@ type Once uint32
 
 // Do invokes f exactly one time, regardless of how many times Do is called.
 func (o *Once) Do(f func()) {
-	if atomic.CompareAndSwapUint32((*uint32)(o), 0, 1) {
-		f()
+	if !atomic.CompareAndSwapUint32((*uint32)(o), 0, 1) {
+		return
 	}
+	f()
 }
 
 // Reset will allow the next invocation of Do to perform the specified action

@@ -3,6 +3,7 @@ package goro_test
 import (
 	"fmt"
 	"sync"
+	"testing"
 
 	"github.com/karrick/goro"
 )
@@ -27,4 +28,17 @@ func ExampleGoro() {
 
 	fmt.Println("counter:", counter)
 	// Output: counter: 2
+}
+
+func BenchmarkOnce(b *testing.B) {
+	var counter int
+	var once goro.Once
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			once.Do(func() { counter++ })
+		}
+	})
+
+	_ = counter
 }
