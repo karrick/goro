@@ -30,9 +30,12 @@ func ExampleGoro() {
 	// Output: counter: 2
 }
 
-func BenchmarkOnce(b *testing.B) {
+type oncer interface {
+	Do(func())
+}
+
+func benchmarkOnce(b *testing.B, once oncer) {
 	var counter int
-	var once goro.Once
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
@@ -41,4 +44,14 @@ func BenchmarkOnce(b *testing.B) {
 	})
 
 	_ = counter
+}
+
+func BenchmarkGoro(b *testing.B) {
+	var once goro.Once
+	benchmarkOnce(b, &once)
+}
+
+func BenchmarkStdlib(b *testing.B) {
+	var once sync.Once
+	benchmarkOnce(b, &once)
 }
